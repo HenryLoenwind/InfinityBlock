@@ -1,0 +1,16 @@
+[
+{
+  "modid": "infinityblock",
+  "name": "Infinity Block",
+  "description": "The Infinity Block is a distributed storage. Each player has 16 channels, and all Infinity Blocks that belong to the same player and channel share an inventory.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Henry Loenwind"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

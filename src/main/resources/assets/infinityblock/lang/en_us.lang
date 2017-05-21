@@ -1,0 +1,21 @@
+infinityblock.config.title=Infinity Block Configuration
+
+tile.infinityblock.name=Infinity Block
+tile.infinityblock.white.name=Infinity Block (White Channel)
+tile.infinityblock.orange.name=Infinity Block (Orange Channel)
+tile.infinityblock.magenta.name=Infinity Block (Magenta Channel)
+tile.infinityblock.lightBlue.name=Infinity Block (Light Blue Channel)
+tile.infinityblock.yellow.name=Infinity Block (Yellow Channel)
+tile.infinityblock.lime.name=Infinity Block (Lime Channel)
+tile.infinityblock.pink.name=Infinity Block (Pink Channel)
+tile.infinityblock.gray.name=Infinity Block (Gray Channel)
+tile.infinityblock.silver.name=Infinity Block (Silver Channel)
+tile.infinityblock.cyan.name=Infinity Block (Cyan Channel)
+tile.infinityblock.purple.name=Infinity Block (Purple Channel)
+tile.infinityblock.blue.name=Infinity Block (Blue Channel)
+tile.infinityblock.brown.name=Infinity Block (Brown Channel)
+tile.infinityblock.green.name=Infinity Block (Green Channel)
+tile.infinityblock.red.name=Infinity Block (Red Channel)
+tile.infinityblock.black.name=Infinity Block (Black Channel)
+
+top.owner.header=Owner:
