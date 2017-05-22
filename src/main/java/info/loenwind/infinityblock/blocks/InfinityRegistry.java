@@ -97,7 +97,7 @@ public class InfinityRegistry {
     @Override
     public int getSlots() {
       if (registry.containsKey(owner)) {
-        return registry.get(owner).size();
+        return registry.get(owner).get(channel).size();
       } else {
         return 0;
       }
