@@ -3,6 +3,8 @@ package info.loenwind.infinityblock.config;
 import javax.annotation.Nonnull;
 
 public enum Section {
+  CLIENT("client", false),
+  RECIPE("recipe", true),
   SERVER("server", true);
 
   @Nonnull

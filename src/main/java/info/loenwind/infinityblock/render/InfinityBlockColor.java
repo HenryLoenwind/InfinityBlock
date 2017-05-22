@@ -5,6 +5,8 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static info.loenwind.infinityblock.config.Config.usePlayerColors;
+
 import info.loenwind.infinityblock.InfinityBlockMod;
 import info.loenwind.infinityblock.blocks.TileInfinityBlock;
 import net.minecraft.block.BlockColored;
@@ -32,7 +34,7 @@ public class InfinityBlockColor implements IBlockColor, IItemColor {
   @Override
   public int colorMultiplier(@Nonnull final IBlockState state, @Nullable final IBlockAccess world, @Nullable final BlockPos pos, final int tintIndex) {
     if (tintIndex == 0) {
-      if (world != null && pos != null) {
+      if (world != null && pos != null && usePlayerColors.getBoolean()) {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileInfinityBlock) {
           final UUID owner = ((TileInfinityBlock) tileEntity).getOwner();
