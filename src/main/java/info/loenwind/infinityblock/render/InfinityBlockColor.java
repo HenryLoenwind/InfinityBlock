@@ -58,7 +58,7 @@ public class InfinityBlockColor implements IBlockColor, IItemColor {
 
   @Override
   public int getColorFromItemstack(@Nonnull final ItemStack stack, final int tintIndex) {
-    return EnumDyeColor.byMetadata(stack.getItemDamage()).getMapColor().colorValue;
+    return tintIndex == 0 || tintIndex == 1 ? EnumDyeColor.byMetadata(stack.getItemDamage()).getMapColor().colorValue : -1;
   }
 
 }
