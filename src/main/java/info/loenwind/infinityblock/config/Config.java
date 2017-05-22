@@ -14,7 +14,7 @@ public enum Config {
   // section, defaultValue, description, requiresWorldRestart, requiresGameRestart
 
   usePlayerColors(Section.CLIENT, true, "Should rotor be colored according by the player's UUID or the channel.", false, false),
-  registerRecipe(Section.RECIPE, false, "Should the recipe be registered. If not, you need to add it to the game in an alternative way. (For modpack makers)",
+  registerRecipe(Section.RECIPE, true, "Should the recipe be registered. If not, you need to add it to the game in an alternative way. (For modpack makers)",
       true, true),
   useIronBlocks(Section.RECIPE, false, "Should the recipe use iron blocks instead of iron ingot.", true, true),
   useBlueGlass(Section.RECIPE, false, "Should the recipe use blue glass instead of uncolored glass.", true, true),
