@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 
 import info.loenwind.infinityblock.InfinityBlockMod;
 import info.loenwind.infinityblock.blocks.BlockInfinityBlock;
+import info.loenwind.infinityblock.config.Config;
+import info.loenwind.infinityblock.render.EasterEgg;
 import info.loenwind.infinityblock.render.InfinityBlockColor;
 import info.loenwind.infinityblock.render.InfinityBlockStateMapper;
 import net.minecraft.block.Block;
@@ -11,6 +13,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -42,6 +45,9 @@ public class ClientProxy extends CommonProxy {
   public void init(final FMLInitializationEvent event) {
     super.init(event);
     InfinityBlockColor.create();
+    if (Config.enableEasterEggs.getBoolean()) {
+      MinecraftForge.EVENT_BUS.register(EasterEgg.class);
+    }
   }
 
 }

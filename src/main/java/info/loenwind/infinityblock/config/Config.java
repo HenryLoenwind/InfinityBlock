@@ -18,6 +18,7 @@ public enum Config {
       true, true),
   useIronBlocks(Section.RECIPE, false, "Should the recipe use iron blocks instead of iron ingot.", true, true),
   useBlueGlass(Section.RECIPE, false, "Should the recipe use blue glass instead of uncolored glass.", true, true),
+  enableEasterEggs(Section.CLIENT, true, "Should easter eggs be enabled.", true, true),
 
   ;
 
