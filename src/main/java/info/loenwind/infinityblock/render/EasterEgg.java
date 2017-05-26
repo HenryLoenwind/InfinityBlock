@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class EasterEgg {
 
@@ -14,6 +15,7 @@ public class EasterEgg {
   private static int idx = -1;
   private static long nextChange = 0L;
 
+  @SubscribeEvent
   public static void render(final PlayerEvent.NameFormat event) {
     if (event.getEntityPlayer().getName().equals("direwolf20") && event.getEntityPlayer() != Minecraft.getMinecraft().player) {
       if (idx < 0 || nextChange > Minecraft.getSystemTime()) {
