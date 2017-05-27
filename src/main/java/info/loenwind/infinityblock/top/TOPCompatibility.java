@@ -90,7 +90,7 @@ public class TOPCompatibility implements Function<ITheOneProbe, Void>, IProbeInf
 
   private void mkOwner(final ProbeMode mode, final EioBox eiobox, final TOPData data) {
     if (data.owner != null || data.ownerName != null) {
-      final ItemStack skull = new ItemStack(Items.SKULL, 1, 2);
+      final ItemStack skull = new ItemStack(Items.SKULL, 1, 3);
       final GameProfile owner_nullchecked = data.owner;
       if (owner_nullchecked != null) {
         final NBTTagCompound nbt = new NBTTagCompound();
