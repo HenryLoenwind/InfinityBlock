@@ -14,6 +14,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemCloth;
@@ -24,6 +25,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -176,6 +178,15 @@ public class BlockInfinityBlock extends Block {
         }
       }
       return true;
+    }
+    if (!worldIn.isRemote && heldItem.getItem() == Items.FLINT) {
+      player.sendMessage(new TextComponentString(InfinityRegistry.instance.toString()));
+    }
+    if (!worldIn.isRemote && heldItem.getItem() == Items.STICK) {
+      final TileEntity tileentity = worldIn.getTileEntity(pos);
+      if (tileentity instanceof TileInfinityBlock) {
+        player.sendMessage(new TextComponentString(InfinityRegistry.instance.toString(((TileInfinityBlock) tileentity).getOwner())));
+      }
     }
     return false;
   }

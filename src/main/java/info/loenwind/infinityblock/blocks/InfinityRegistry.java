@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -31,22 +32,24 @@ public class InfinityRegistry {
     final UUID owner = te.getOwner();
     if (owner != null) {
       if (!registry.containsKey(owner)) {
-        final NonNullList<TileInfinityBlock> list = NonNullList.create();
-        list.add(te);
+        final NonNullList<TileInfinityBlock> channelList = NonNullList.create();
+        channelList.add(te);
         registry.put(owner, new ChannelList());
-      } else {
-        final List<TileInfinityBlock> list = registry.get(owner).get(te.getChannel());
-        final Iterator<TileInfinityBlock> iterator = list.iterator();
-        while (iterator.hasNext()) {
-          final TileInfinityBlock next = iterator.next();
-          if (!isValid(next)) {
-            iterator.remove();
-          } else if (isSame(next, te)) {
-            return;
-          }
-        }
-        list.add(te);
       }
+      final List<TeLink<TileInfinityBlock>> linkList = registry.get(owner).get(te.getChannel());
+      final Iterator<TeLink<TileInfinityBlock>> iterator = linkList.iterator();
+      while (iterator.hasNext()) {
+        final TeLink<TileInfinityBlock> nextLink = iterator.next();
+        if (nextLink.isDupe(te)) {
+          return;
+        }
+        final TileInfinityBlock nextTe = nextLink.get();
+        if (nextTe == null) {
+          iterator.remove();
+        }
+      }
+      final TeLink<TileInfinityBlock> teLink = new TeLink<>(te);
+      linkList.add(teLink);
     }
   }
 
@@ -55,15 +58,17 @@ public class InfinityRegistry {
     if (owner != null) {
       if (registry.containsKey(owner)) {
         boolean hasRemaining = false;
-        for (final List<TileInfinityBlock> list : registry.get(owner).values()) {
-          final Iterator<TileInfinityBlock> iterator = list.iterator();
+        for (final List<TeLink<TileInfinityBlock>> list : registry.get(owner).values()) {
+          final Iterator<TeLink<TileInfinityBlock>> iterator = list.iterator();
           while (iterator.hasNext()) {
-            final TileInfinityBlock next = iterator.next();
-            if (isSame(next, te) || !isValid(next)) {
+            final TeLink<TileInfinityBlock> nextLink = iterator.next();
+            if (nextLink.isSame(te)) {
+              iterator.remove();
+            } else if (nextLink.get() == null) {
               iterator.remove();
             }
           }
-          hasRemaining |= !list.isEmpty();
+          hasRemaining = !list.isEmpty() || hasRemaining;
         }
         if (!hasRemaining) {
           registry.remove(owner);
@@ -72,15 +77,24 @@ public class InfinityRegistry {
     }
   }
 
-  protected boolean isValid(final TileInfinityBlock te) {
-    return !te.isInvalid() && te.hasWorld() && te.getWorld().isBlockLoaded(te.getPos()) && te.getWorld().getTileEntity(te.getPos()) == te;
+  protected void checkIsThere(final TileInfinityBlock te) {
+    final UUID owner = te.getOwner();
+    if (owner != null) {
+      if (registry.containsKey(owner)) {
+        final List<TeLink<TileInfinityBlock>> list = registry.get(owner).get(te.getChannel());
+        final Iterator<TeLink<TileInfinityBlock>> iterator = list.iterator();
+        while (iterator.hasNext()) {
+          if (iterator.next().isSame(te)) {
+            return;
+          }
+        }
+      }
+      register(te);
+    }
   }
 
-  private boolean isSame(final TileInfinityBlock te1, final TileInfinityBlock te2) {
-    return te1 == te2 || (te1.getWorld() == te2.getWorld() && te1.getPos().equals(te2.getPos()));
-  }
-
-  public IItemHandler getInventory(final UUID owner, final EnumDyeColor channel) {
+  public IItemHandler getInventory(final TileInfinityBlock te, final UUID owner, final EnumDyeColor channel) {
+    checkIsThere(te);
     return new ItemHandler(owner, channel);
   }
 
@@ -107,11 +121,14 @@ public class InfinityRegistry {
     @Nonnull
     public ItemStack getStackInSlot(final int slot) {
       if (registry.containsKey(owner)) {
-        final List<TileInfinityBlock> list = registry.get(owner).get(channel);
+        final List<TeLink<TileInfinityBlock>> list = registry.get(owner).get(channel);
         if (slot >= 0 && slot < list.size()) {
-          final TileInfinityBlock te = list.get(slot);
-          if (isValid(te)) {
+          final TileInfinityBlock te = list.get(slot).get();
+          if (te != null) {
             return te.getInventory();
+          } else {
+            list.remove(slot);
+            return getStackInSlot(slot);
           }
         }
       }
@@ -126,10 +143,10 @@ public class InfinityRegistry {
       }
 
       if (registry.containsKey(owner)) {
-        final List<TileInfinityBlock> list = registry.get(owner).get(channel);
+        final List<TeLink<TileInfinityBlock>> list = registry.get(owner).get(channel);
         if (slot >= 0 && slot < list.size()) {
-          final TileInfinityBlock te = list.get(slot);
-          if (isValid(te)) {
+          final TileInfinityBlock te = list.get(slot).get();
+          if (te != null) {
             final ItemStack stackInSlot = te.getInventory();
             if (stackInSlot.isEmpty()) {
               if (!simulate) {
@@ -161,6 +178,9 @@ public class InfinityRegistry {
                 }
               }
             }
+          } else {
+            list.remove(slot);
+            return insertItem(slot, stack, simulate);
           }
         }
       }
@@ -172,18 +192,21 @@ public class InfinityRegistry {
     public ItemStack extractItem(final int slot, final int amount, final boolean simulate) {
       if (amount > 0) {
         if (registry.containsKey(owner)) {
-          final List<TileInfinityBlock> list = registry.get(owner).get(channel);
+          final List<TeLink<TileInfinityBlock>> list = registry.get(owner).get(channel);
           if (slot >= 0 && slot < list.size()) {
-            final TileInfinityBlock te = list.get(slot);
-            if (isValid(te)) {
+            final TileInfinityBlock te = list.get(slot).get();
+            if (te != null) {
               final ItemStack stackInSlot = te.getInventory();
               if (!simulate) {
                 final ItemStack result = stackInSlot.splitStack(amount);
-                list.get(slot).markDirty();
+                te.markDirty();
                 return result;
               } else {
                 return stackInSlot.copy().splitStack(amount);
               }
+            } else {
+              list.remove(slot);
+              return extractItem(slot, amount, simulate);
             }
           }
         }
@@ -196,6 +219,23 @@ public class InfinityRegistry {
       return 64;
     }
 
+  }
+
+  @Override
+  public @Nonnull String toString() {
+    String result = "";
+    for (final UUID uuid : registry.keySet()) {
+      final String username = UsernameCache.getLastKnownUsername(uuid);
+      result += (username == null ? "(unknown)" : username) + " (" + uuid + ")\n" + registry.get(uuid);
+    }
+    return result;
+  }
+
+  public @Nonnull String toString(final UUID uuid) {
+    String result = "";
+    final String username = UsernameCache.getLastKnownUsername(uuid);
+    result += (username == null ? "(unknown)" : username) + " (" + uuid + ")\n" + registry.get(uuid);
+    return result;
   }
 
 }

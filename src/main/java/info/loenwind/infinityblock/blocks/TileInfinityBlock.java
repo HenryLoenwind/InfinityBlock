@@ -92,7 +92,7 @@ public class TileInfinityBlock extends TileEntity {
   @Nullable
   public <T> T getCapability(@Nonnull final Capability<T> capability, @Nullable final EnumFacing facing) {
     if (owner != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-      return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(InfinityRegistry.instance.getInventory(owner, getChannel()));
+      return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(InfinityRegistry.instance.getInventory(this, owner, getChannel()));
     }
     return super.getCapability(capability, facing);
   }
@@ -161,6 +161,15 @@ public class TileInfinityBlock extends TileEntity {
   public void channelchanged() {
     disconnect();
     connect();
+  }
+
+  @Override
+  public String toString() {
+    try {
+      return "TileInfinityBlock [getOwner()=" + getOwner() + ", getChannel()=" + getChannel() + ", getPos()=" + getPos() + "]";
+    } catch (final Exception e) {
+      return "TileInfinityBlock [getOwner()=" + getOwner() + ", getChannel()=???, getPos()=" + getPos() + "]";
+    }
   }
 
 }
